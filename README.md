@@ -1,6 +1,6 @@
 # Gauche-srfi-115
 
-[Gauche](http://practical-scheme.net/gauche/) port of [SRFI 115: : Scheme Regular Expressions](http://srfi.schemers.org/srfi-115/).
+[Gauche](http://practical-scheme.net/gauche/) port of [SRFI 115: Scheme Regular Expressions](http://srfi.schemers.org/srfi-115/).
 
 ## TODO
 
