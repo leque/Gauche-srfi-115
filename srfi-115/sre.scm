@@ -29,6 +29,7 @@
   (use srfi-1)
   (use srfi-13)
   (use srfi-14)
+  (use gauche.collection)
   (use util.match)
   (use srfi-115.internal.char-set)
   (export regexp rx regexp->sre char-set->sre valid-sre? regexp?))
@@ -243,7 +244,29 @@
       (((or '** 'repeated) (? nat? m) (? nat? n) sres ...)
        (rep m n sres))
       (((or 'or '|\||) sres ...)
-       `(alt ,@(map-in-order recur sres)))
+       ;; take the union of adjacent char-sets
+       ;; NB: we cannot reorder subexpressions
+       ;; Cf.
+       ;;   ((#/[a-z]|Aa|[A-Z]/ "Aa") 0) ; => "Aa"
+       ;;   ((#/[a-z]|[A-Z]|Aa/ "Aa") 0) ; => "A"
+       (receive (cs res)
+           (fold2 (lambda (sre cs res)
+                    (let ((x (recur sre)))
+                      (if (char-set? x)
+                          (values (cons x cs) res)
+                          (values '()
+                                  (cond-list
+                                   (#t x)
+                                   ((pair? cs)
+                                    (apply char-set-union cs))
+                                   (#t @ res))))))
+                  '() '() sres)
+         (match (reverse! (cond-list
+                           ((pair? cs)
+                            (apply char-set-union cs))
+                           (#t @ res)))
+           ((x) x)
+           (alts `(alt ,@alts)))))
       (((or ': 'seq) sres ...)
        `(seq ,@(map-in-order recur sres)))
       (((or '$ 'submatch) sres ...)

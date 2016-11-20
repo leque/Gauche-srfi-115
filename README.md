@@ -6,7 +6,6 @@
 
 * support `grapheme`, `bog`, and `eog` patterns.
 * add feature identifiers: `regexp-non-greedy`, `regexp-look-around`, `regexp-backrefs`, `regexp-unicode`
-* optimize `or`-pattern if all sub-expressions are cset-sre
 
 ## REQUIREMENT
 
